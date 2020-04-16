@@ -1,41 +1,60 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
 
-    public static int[][] field;
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        int n = in.nextInt(), m = in.nextInt();
-        field = new int[n][m];
-        field[0][0] = 1;
+        //Scanner in = new Scanner(System.in);
+        Scanner in = new Scanner(new File("src/test.txt")); //сканнеры для ввода с консоли (1) или из файла (2) (раскомментить нужное)
 
-        for (int k = 0; k < m; k++) {
-            int i = 0, j = k;
-            while(j >= 0) {
-                sum(i, j);
-                i++;
-                j--;
-            }
+        int n = in.nextInt();
+        ArrayList<Ex2Auditory> times = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            Ex2Auditory time = new Ex2Auditory(in.nextInt(), in.nextInt());
+            times.add(time);
         }
-        for (int k = 1; k < n; k++) {
-            int i = k, j = m-1;
-            while(i < n) {
-                sum(i, j);
-                i++;
-                j--;
-            }
-        }
+        SecondExercise(n, times);
 
-        System.out.println(field[n-1][m-1]);
     }
 
-    static void sum(int i, int j) {
-        try {
-            field[i][j] += field[i-1][j-2];
-        } catch (IndexOutOfBoundsException e) {}
-        try {
-            field[i][j] += field[i-2][j-1];
-        } catch (IndexOutOfBoundsException e) {}
+    static void FirstExercise(int inSum) {
+        int[] money = {500, 200, 100, 50, 20, 10};
+
+        int currSum  = 0;
+        int i = 0, valOfBills = 0;
+
+        while(currSum < inSum) {
+            if(currSum + money[i] <= inSum) {
+                currSum+= money[i];
+                valOfBills++;
+            } else i++;
+            if(i >= money.length) break;
+        }
+
+        System.out.println(currSum == inSum ? valOfBills : -1);
+    }
+    static void SecondExercise(int n, ArrayList<Ex2Auditory> times) {
+        Collections.sort(times);
+
+        ArrayList<Ex2Auditory> lessons = new ArrayList<>();
+        lessons.add(times.get(0));
+
+        for (int i = 1; i < n; i++) {
+            boolean flag = true;
+            for (int j = 0; j < lessons.size(); j++) {
+                if(times.get(i).begin >= lessons.get(j).end) {
+                    lessons.get(j).end = times.get(i).end;
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag) lessons.add(times.get(i));
+        }
+
+        System.out.println(lessons.size());
     }
 }
